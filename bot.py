@@ -101,14 +101,21 @@ async def delete_command(message: Message):
         return
 
     try:
-        expense_id = int(parts[1])
+        index = int(parts[1])
     except ValueError:
-        await message.answer("Bitte gib eine gültige ID ein. Beispiel: /delete 3")
+        await message.answer("Bitte gib eine gültige ID ein.")
         return
 
-    await delete_expense(message.from_user.id, expense_id)
+    expenses = await get_expenses(message.from_user.id)
 
-    await message.answer(f"Eintrag #{expense_id} wurde gelöscht 🗑")
+    if index < 1 or index > len(expenses):
+        await message.answer(f"Eintrag #{index} existiert nicht.")
+        return
+
+    real_id = expenses[index - 1][0]
+
+    await delete_expense(message.from_user.id, real_id)
+    await message.answer(f"Eintrag #{index} wurde gelöscht 🗑")
 
 
 # MAIN
